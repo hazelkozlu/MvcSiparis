@@ -16,7 +16,6 @@ namespace MvcSiparis.Models
         public double Price { get; set; }
         public  int CategoryId { get; set; }
         public string Picture { get; set; }
-
         [ForeignKey("CategoryId")]
         public Category Category { get; set; }
     }
