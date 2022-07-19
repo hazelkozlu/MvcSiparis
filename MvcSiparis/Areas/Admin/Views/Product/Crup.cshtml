@@ -1,0 +1,42 @@
+﻿@model MvcSiparis.Models.ViewModels.ProductVM
+
+<form method="post" asp-action="Edit">
+<h2>Ürün @(Model.Product.Id<=0 ? "Ekle" : "Güncelle")</h2>
+<div class="row my-1">
+    <label asp-for="Product.Name"></label>
+    <input asp-for="Product.Name" class="form-control"/>
+</div>
+<div class="row my-1">
+    <label asp-for="Product.Description"></label>
+    <input asp-for="Product.Description" class="form-control"/>
+</div>
+<div class="row my-1">
+    <label asp-for="Product.Barcode"></label>
+    <input asp-for="Product.Barcode" class="form-control"/>
+</div>
+<div class="row my-1">
+    <label asp-for="Product.Price"></label>
+    <input asp-for="Product.Price" class="form-control"/>
+</div>
+<div class="row my-1">
+    <label asp-for="Product.CategoryId"></label>
+    <select asp-for="Product.CategoryId" asp-items="@Model.CategoryList" class="form-control">
+    <option disabled selected> -Lütfen bir kategori seçiniz-</option>       
+    </select>
+</div>
+
+<div class="row my-1">
+    <label asp-for="Product.Picture"></label>
+    <input asp-for="Product.Picture" class="form-control"/>
+</div>
+
+<div class="row my-2" >
+   <div class="col-6"> 
+       <button type="submit" class="btn btn-primary"> @(Model.Product.Id<=0 ? "Ekle" : "Güncelle")</button>
+   </div> 
+    <div class="col-6"> 
+        <a asp-controller="Product" asp-action="Index" class="btn btn-primary">Ürün Listesine Dön</a>
+   </div> 
+    
+</div>
+</form> 
