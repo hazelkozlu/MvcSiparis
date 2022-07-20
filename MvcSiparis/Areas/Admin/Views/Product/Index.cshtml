@@ -21,6 +21,7 @@
         <table class="table table-bordered table-striped my-2">
             <thead>
                 <tr>
+                    <th>Ürün Resmi </th>
                     <th>Ürün Adı </th>
                      <th>Fiyatı  </th>
                       <th>İşlemler</th>
@@ -32,6 +33,7 @@
                 @foreach (var item in Model)
                 {
                     <tr>
+                         <td><img src="@item.Picture" width="80px"/></td>
                         <td>@item.Name</td>
                          <td>@item.Price</td>
                         <td>

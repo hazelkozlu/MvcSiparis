@@ -10,29 +10,34 @@ namespace MvcSiparis.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-        public ProductController(IUnitOfWork unitOfWork)
+        private readonly IWebHostEnvironment _hostEnvironment;
+
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _hostEnvironment = hostEnvironment;
         }
+
+
         public IActionResult Index()
         {
-           var productList = _unitOfWork.Product.GetAll();
+            var productList = _unitOfWork.Product.GetAll();
+
             return View(productList);
-            
         }
-       
+
+
+
         public IActionResult Crup(int? id)
         {
             ProductVM productVM = new()
             {
                 Product = new(),
                 CategoryList = _unitOfWork.Category.GetAll().Select(l => new SelectListItem
-
                 {
                     Text = l.Name,
                     Value = l.Id.ToString()
-                }
-                )
+                })
             };
 
 
@@ -40,16 +45,47 @@ namespace MvcSiparis.Areas.Admin.Controllers
             {
                 return View(productVM);
             }
-             productVM.Product = _unitOfWork.Product.GetFirtsOrDefault(x => x.Id == id);
+
+            productVM.Product = _unitOfWork.Product.GetFirtsOrDefault(x => x.Id == id);
+
             if (productVM.Product == null)
             {
                 return View(productVM);
             }
+
             return View(productVM);
         }
+
         [HttpPost]
-        public IActionResult Crup(ProductVM productVM)
+        public IActionResult Crup(ProductVM productVM, IFormFile file)
         {
+            string wwwRootPath = _hostEnvironment.WebRootPath;
+
+            if (file != null)
+            {
+                string fileName = Guid.NewGuid().ToString();
+                var uploadRoot = Path.Combine(wwwRootPath, @"img\products");
+                var extension = Path.GetExtension(file.FileName);
+
+                if (productVM.Product.Picture != null)
+                {
+                    var oldPicPath = Path.Combine(wwwRootPath, productVM.Product.Picture);
+                    if (System.IO.File.Exists(oldPicPath))
+                    {
+                        System.IO.File.Delete(oldPicPath);
+                    }
+                }
+
+                using (var fileStream = new FileStream(Path.Combine(uploadRoot, fileName + extension),
+                     FileMode.Create))
+                {
+                    file.CopyTo(fileStream);
+                }
+
+                productVM.Product.Picture = @"\img\products\" + fileName + extension;
+
+            }
+
             if (productVM.Product.Id <= 0)
             {
                 _unitOfWork.Product.Add(productVM.Product);
@@ -58,28 +94,21 @@ namespace MvcSiparis.Areas.Admin.Controllers
             {
                 _unitOfWork.Product.Update(productVM.Product);
             }
-              
-                _unitOfWork.Save();
-                return RedirectToAction("Index");
-          
+            _unitOfWork.Save();
+            return RedirectToAction("Index");
         }
-        public IActionResult Delete(int id)
+
+        public IActionResult Delete(int? id)
         {
             if (id == null || id <= 0)
             {
                 return NotFound();
             }
-            var product = _unitOfWork.Product.GetFirtsOrDefault(x => x.Id == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
 
+            var product = _unitOfWork.Product.GetFirtsOrDefault(x => x.Id == id);
             _unitOfWork.Product.Remove(product);
             _unitOfWork.Save();
             return RedirectToAction("Index");
         }
-
-
     }
 }

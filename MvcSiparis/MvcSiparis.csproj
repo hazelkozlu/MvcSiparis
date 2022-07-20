@@ -21,4 +21,8 @@
     <ProjectReference Include="..\MvcSiparis.Data\MvcSiparis.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\img\products\" />
+  </ItemGroup>
+
 </Project>
